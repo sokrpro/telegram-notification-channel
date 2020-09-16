@@ -12,14 +12,14 @@ class TelegramWebhookChannel
     /**
      * The HTTP client instance.
      *
-     * @var HttpClient
+     * @var \GuzzleHttp\Client
      */
     protected HttpClient $http;
 
     /**
-     * Create a new Slack channel instance.
+     * Create a new Telegram channel instance.
      *
-     * @param  HttpClient  $http
+     * @param  \GuzzleHttp\Client  $http
      * @return void
      */
     public function __construct(HttpClient $http)
@@ -27,10 +27,22 @@ class TelegramWebhookChannel
         $this->http = $http;
     }
 
+    /**
+     * Send the given notification.
+     *
+     * @param  mixed  $notifiable
+     * @param  \Illuminate\Notifications\Notification  $notification
+     * @return \Psr\Http\Message\ResponseInterface|void
+     */
     public function send($notifiable, Notification $notification)
     {
-        if (! $url = $notifiable->routeNotificationFor('slack', $notification)) {
+        if (! $url = $notifiable->routeNotificationFor('telegram', $notification)) {
             return;
         }
+
+        $message = $notification->toTelegram($notifiable);
+        $url = \sprintf('%s%s', $url, $message->urlPath);
+
+        return $this->http->post($url, ['json' => $message->toArray()]);
     }
 }
