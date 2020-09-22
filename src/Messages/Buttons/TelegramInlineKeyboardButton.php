@@ -35,11 +35,14 @@ class TelegramInlineKeyboardButton
 
     public function toArray()
     {
-        $button = [
-            'text' => $this->text,
-        ];
-        if (isset($this->url)) $button['url'] = $this->url;
-        if (isset($this->callbackData)) $button['callback_data'] = $this->callbackData;
+        $button = ['text' => $this->text];
+        if (isset($this->url)) {
+            $button['url'] = $this->url;
+        }
+
+        if (isset($this->callbackData)) {
+            $button['callback_data'] = $this->callbackData;
+        }
 
         return $button;
     }
